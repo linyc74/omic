@@ -1,6 +1,6 @@
 import argparse
 from typing import List, Dict
-from src import filtering, picking
+from src import filtering, picking, vcf2csv
 
 
 __VERSION__ = '1.0.0-beta'
@@ -10,12 +10,36 @@ PROG = 'python variant'
 DESCRIPTION = f'CLI tools for variant calling pipeline (version {__VERSION__}) by Yu-Cheng Lin (ylin@nycu.edu.tw)'
 
 
-# mode
 FILTERING = 'filtering'
 PICKING = 'picking'
+VCF2CSV = 'vcf2csv'
 
 
-# args
+INPUT_VCF_ARG = {
+    'keys': ['-i', '--input-vcf'],
+    'properties': {
+        'type': str,
+        'required': True,
+        'help': 'path to the input vcf(.gz) file',
+    }
+}
+OUTPUT_VCF_ARG = {
+    'keys': ['-o', '--output-vcf'],
+    'properties': {
+        'type': str,
+        'required': True,
+        'help': 'path to the output vcf(.gz) file',
+    }
+}
+WORKDIR_ARG = {
+    'keys': ['-w', '--workdir'],
+    'properties': {
+        'type': str,
+        'required': False,
+        'default': './temp',
+        'help': 'path to the temporary working directory (default: %(default)s)',
+    }
+}
 HELP_ARG = {
     'keys': ['-h', '--help'],
     'properties': {
@@ -31,36 +55,15 @@ VERSION_ARG = {
         'help': 'show version',
     }
 }
-WORKDIR_ARG = {
-    'keys': ['-w', '--workdir'],
-    'properties': {
-        'type': str,
-        'required': False,
-        'default': './temp',
-        'help': 'path to the temporary working directory (default: %(default)s)',
-    }
-}
+
+
 MODE_TO_GROUP_TO_ARGS = {
     FILTERING:
         {
             'Required':
                 [
-                    {
-                        'keys': ['-i', '--input-vcf'],
-                        'properties': {
-                            'type': str,
-                            'required': True,
-                            'help': 'path to the input vcf(.gz) file',
-                        }
-                    },
-                    {
-                        'keys': ['-o', '--output-vcf'],
-                        'properties': {
-                            'type': str,
-                            'required': True,
-                            'help': 'path to the output vcf(.gz) file',
-                        }
-                    },
+                    INPUT_VCF_ARG,
+                    OUTPUT_VCF_ARG
                 ],
             'Optional':
                 [
@@ -99,14 +102,7 @@ MODE_TO_GROUP_TO_ARGS = {
                             'help': 'path to the reference genome fasta file',
                         }
                     },
-                    {
-                        'keys': ['-o', '--output-vcf'],
-                        'properties': {
-                            'type': str,
-                            'required': True,
-                            'help': 'path to the output vcf(.gz) file',
-                        }
-                    },
+                    OUTPUT_VCF_ARG,
                 ],
             'Optional':
                 [
@@ -196,6 +192,27 @@ MODE_TO_GROUP_TO_ARGS = {
                     VERSION_ARG,
                 ],
         },
+    VCF2CSV:
+        {
+            'Required':
+                [
+                    INPUT_VCF_ARG,
+                    {
+                        'keys': ['-o', '--output-csv'],
+                        'properties': {
+                            'type': str,
+                            'required': True,
+                            'help': 'path to the output csv file',
+                        }
+                    },
+                ],
+            'Optional':
+                [
+                    WORKDIR_ARG,
+                    HELP_ARG,
+                    VERSION_ARG,
+                ],
+        }
 }
 
 
@@ -204,12 +221,11 @@ class EntryPoint:
     root_parser: argparse.ArgumentParser
     filtering_parser: argparse.ArgumentParser
     picking_parser: argparse.ArgumentParser
+    vcf2csv_parser: argparse.ArgumentParser
 
     def main(self):
         self.set_parsers()
-        self.add_root_parser_args()
-        self.add_filtering_parser_args()
-        self.add_picking_parser_args()
+        self.add_arguments()
         self.run()
 
     def set_parsers(self):
@@ -236,25 +252,35 @@ class EntryPoint:
             description=f'{DESCRIPTION} - {PICKING} mode',
             add_help=False)
 
-    def add_root_parser_args(self):
+        self.vcf2csv_parser = subparsers.add_parser(
+            prog=f'{PROG} {VCF2CSV}',
+            name=VCF2CSV,
+            description=f'{DESCRIPTION} - {VCF2CSV} mode',
+            add_help=False)
+
+    def add_arguments(self):
         for arg in [HELP_ARG, VERSION_ARG]:
             self.root_parser.add_argument(*arg['keys'], **arg['properties'])
 
-    def add_filtering_parser_args(self):
-        self.__add_arguments(
+        self.__add(
             parser=self.filtering_parser,
             required_args=MODE_TO_GROUP_TO_ARGS[FILTERING]['Required'],
             optional_args=MODE_TO_GROUP_TO_ARGS[FILTERING]['Optional']
         )
 
-    def add_picking_parser_args(self):
-        self.__add_arguments(
+        self.__add(
             parser=self.picking_parser,
             required_args=MODE_TO_GROUP_TO_ARGS[PICKING]['Required'],
             optional_args=MODE_TO_GROUP_TO_ARGS[PICKING]['Optional']
         )
 
-    def __add_arguments(
+        self.__add(
+            parser=self.vcf2csv_parser,
+            required_args=MODE_TO_GROUP_TO_ARGS[VCF2CSV]['Required'],
+            optional_args=MODE_TO_GROUP_TO_ARGS[VCF2CSV]['Optional']
+        )
+
+    def __add(
             self,
             parser: argparse.ArgumentParser,
             required_args: List[Dict],
@@ -297,6 +323,13 @@ class EntryPoint:
                 somatic_sniper=args.somatic_sniper,
                 min_snv_callers=args.min_snv_callers,
                 min_indel_callers=args.min_indel_callers,
+                workdir=args.workdir)
+
+        elif args.mode == VCF2CSV:
+            print(f'Start running variant {VCF2CSV} {__VERSION__}\n', flush=True)
+            vcf2csv(
+                input_vcf=args.input_vcf,
+                output_csv=args.output_csv,
                 workdir=args.workdir)
 
 

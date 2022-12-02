@@ -1,5 +1,7 @@
 from os import makedirs
+from os.path import basename, join
 from typing import List, Optional
+from .parse_vcf import ParseVcf
 from .template import Settings, Processor
 from .variant_picking import VariantPicking
 from .variant_filtering import FlagVariants, RemoveVariants
@@ -171,3 +173,43 @@ class Picking(Processor):
             min_indel_callers=self.min_indel_callers)
 
         self.call(f'mv {vcf} {self.output_vcf}')
+
+
+def vcf2csv(
+        input_vcf: str,
+        output_csv: str,
+        workdir: str):
+
+    makedirs(workdir, exist_ok=True)
+
+    settings = Settings(
+        workdir=workdir,
+        outdir='.',
+        threads=1,
+        debug=False,
+        mock=False)
+
+    Vcf2Csv(settings).main(
+        input_vcf=input_vcf,
+        output_csv=output_csv)
+
+
+class Vcf2Csv(Processor):
+
+    input_vcf: str
+    output_csv: str
+
+    def main(
+            self,
+            input_vcf: str,
+            output_csv: str):
+
+        self.input_vcf = input_vcf
+        self.output_csv = output_csv
+
+        ParseVcf(self.settings).main(
+            vcf=self.input_vcf,
+            dstdir=self.workdir)
+
+        csv = join(self.workdir, basename(self.input_vcf)[:-len('.vcf')] + '.csv')
+        self.call(f'mv {csv} {self.output_csv}')
