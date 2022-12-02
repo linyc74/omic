@@ -11,7 +11,10 @@ Help messages:
 ```commandline
 python variant filtering -h
 python variant picking -h
+python variant vcf2csv -h
 ```
+
+### Variant Filtering
 
 The `filtering` mode flags variants and then remove variants based on flags:
 
@@ -22,6 +25,8 @@ python variant filtering \
     --variant-flagging-criteria "LOW_DP: DP<20, HIGH_MQ: MQ>=30" \
     --variant-removal-flags panel_of_normal,LOW_DP
 ```
+
+### Variant Picking
 
 The `picking` mode picks variants from multiple vcfs:
 
@@ -44,3 +49,13 @@ Available caller intputs for the `picking` mode include:
 - `--vardict`
 - `--lofreq`
 - `--somatic-sniper`
+
+### VCF to CSV
+
+The `vcf2csv` mode parses VCF file into CSV format:
+
+```commandline
+python variant vcf2csv \
+    --input-vcf input.vcf \
+    --output-csv output.csv \
+```
