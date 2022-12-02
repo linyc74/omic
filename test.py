@@ -1,7 +1,7 @@
-import os
-import shutil
 import unittest
 import subprocess
+from os import remove
+from shutil import rmtree
 
 
 class TestCLI(unittest.TestCase):
@@ -11,8 +11,8 @@ class TestCLI(unittest.TestCase):
         self.output_vcf = './output.vcf'
 
     def tearDown(self):
-        shutil.rmtree(self.workdir)
-        os.remove(self.output_vcf)
+        rmtree(self.workdir)
+        remove(self.output_vcf)
 
     def test_filtering(self):
         cmd = f'''python __main__.py filtering \\
@@ -34,6 +34,3 @@ class TestCLI(unittest.TestCase):
 --min-indel-callers 1 \\
 --workdir {self.workdir}'''
         subprocess.check_call(cmd, shell=True)
-
-
-
