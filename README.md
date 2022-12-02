@@ -57,5 +57,5 @@ The `vcf2csv` mode parses VCF file into CSV format:
 ```commandline
 python variant vcf2csv \
     --input-vcf input.vcf \
-    --output-csv output.csv \
+    --output-csv output.csv
 ```
