@@ -27,8 +27,8 @@ class TestCLI(unittest.TestCase):
         self.output = './output.vcf'
         cmd = f'''python __main__.py picking \\
 --ref-fa ./data/chr9.fa \\
---mutect2 ./data/mutect2.vcf \\
---muse ./data/muse.vcf \\
+--mutect2 ./data/mutect2.vcf.gz \\
+--muse ./data/muse.vcf.gz \\
 --lofreq ./data/lofreq.vcf \\
 --output-vcf {self.output} \\
 --min-snv-callers 2 \\

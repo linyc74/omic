@@ -162,6 +162,8 @@ class Picking(Processor):
             (self.somatic_sniper, f'{self.workdir}/somatic-sniper.vcf'),
         ]:
             if src is not None:
+                if src.endswith('.gz'):
+                    dst += '.gz'
                 self.call(f'cp {src} {dst}')
                 self.vcfs.append(dst)
 
