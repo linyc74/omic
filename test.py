@@ -13,9 +13,9 @@ class TestCLI(unittest.TestCase):
         rmtree(self.workdir)
         remove(self.output)
 
-    def test_filtering(self):
+    def test_variant_filtering(self):
         self.output = './output.vcf'
-        cmd = f'''python __main__.py filtering \\
+        cmd = f'''python __main__.py variant-filtering \\
 --input-vcf ./data/tiny.vcf \\
 --output-vcf {self.output} \\
 --variant-flagging-criteria "LOW_DP: DP<20, HIGH_MQ: MQ>=30" \\
@@ -23,9 +23,9 @@ class TestCLI(unittest.TestCase):
 --workdir {self.workdir}'''
         subprocess.check_call(cmd, shell=True)
 
-    def test_picking(self):
+    def test_variant_picking(self):
         self.output = './output.vcf'
-        cmd = f'''python __main__.py picking \\
+        cmd = f'''python __main__.py variant-picking \\
 --ref-fa ./data/chr9.fa \\
 --mutect2 ./data/mutect2.vcf.gz \\
 --muse ./data/muse.vcf.gz \\

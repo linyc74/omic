@@ -1,6 +1,6 @@
 import argparse
 from typing import List, Dict
-from src import filtering, picking, vcf2csv
+from src import variant_filtering, variant_picking, vcf2csv
 
 
 __VERSION__ = '1.0.0-beta'
@@ -302,7 +302,7 @@ class EntryPoint:
 
         elif args.mode == VARIANT_FILTERING:
             print(f'Start running omic {VARIANT_FILTERING} {__VERSION__}\n', flush=True)
-            filtering(
+            variant_filtering(
                 input_vcf=args.input_vcf,
                 output_vcf=args.output_vcf,
                 variant_flagging_criteria=args.variant_flagging_criteria,
@@ -311,7 +311,7 @@ class EntryPoint:
 
         elif args.mode == VARIANT_PICKING:
             print(f'Start running omic {VARIANT_PICKING} {__VERSION__}\n', flush=True)
-            picking(
+            variant_picking(
                 ref_fa=args.ref_fa,
                 output_vcf=args.output_vcf,
                 mutect2=args.mutect2,

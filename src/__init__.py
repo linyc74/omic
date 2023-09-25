@@ -7,7 +7,7 @@ from .variant_picking import VariantPicking
 from .variant_filtering import FlagVariants, RemoveVariants
 
 
-def filtering(
+def variant_filtering(
         input_vcf: str,
         output_vcf: str,
         variant_flagging_criteria: str,
@@ -23,14 +23,14 @@ def filtering(
         debug=False,
         mock=False)
 
-    Filtering(settings).main(
+    VariantFiltering(settings).main(
         input_vcf=input_vcf,
         output_vcf=output_vcf,
         variant_flagging_criteria=variant_flagging_criteria,
         variant_removal_flags=variant_removal_flags)
 
 
-class Filtering(Processor):
+class VariantFiltering(Processor):
 
     input_vcf: str
     output_vcf: str
@@ -67,7 +67,7 @@ class Filtering(Processor):
             flags=self.variant_removal_flags)
 
 
-def picking(
+def variant_picking(
         ref_fa: str,
         output_vcf: str,
         mutect2: str,
