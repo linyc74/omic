@@ -10,8 +10,8 @@ PROG = 'python variant'
 DESCRIPTION = f'CLI tools for variant calling pipeline (version {__VERSION__}) by Yu-Cheng Lin (ylin@nycu.edu.tw)'
 
 
-FILTERING = 'filtering'
-PICKING = 'picking'
+VARIANT_FILTERING = 'variant-filtering'
+VARIANT_PICKING = 'variant-picking'
 VCF2CSV = 'vcf2csv'
 
 
@@ -58,7 +58,7 @@ VERSION_ARG = {
 
 
 MODE_TO_GROUP_TO_ARGS = {
-    FILTERING:
+    VARIANT_FILTERING:
         {
             'Required':
                 [
@@ -90,7 +90,7 @@ MODE_TO_GROUP_TO_ARGS = {
                     VERSION_ARG,
                 ],
         },
-    PICKING:
+    VARIANT_PICKING:
         {
             'Required':
                 [
@@ -219,8 +219,8 @@ MODE_TO_GROUP_TO_ARGS = {
 class EntryPoint:
 
     root_parser: argparse.ArgumentParser
-    filtering_parser: argparse.ArgumentParser
-    picking_parser: argparse.ArgumentParser
+    variant_filtering_parser: argparse.ArgumentParser
+    variant_picking_parser: argparse.ArgumentParser
     vcf2csv_parser: argparse.ArgumentParser
 
     def main(self):
@@ -240,16 +240,16 @@ class EntryPoint:
             dest='mode'
         )
 
-        self.filtering_parser = subparsers.add_parser(
-            prog=f'{PROG} {FILTERING}',
-            name=FILTERING,
-            description=f'{DESCRIPTION} - {FILTERING} mode',
+        self.variant_filtering_parser = subparsers.add_parser(
+            prog=f'{PROG} {VARIANT_FILTERING}',
+            name=VARIANT_FILTERING,
+            description=f'{DESCRIPTION} - {VARIANT_FILTERING} mode',
             add_help=False)
 
-        self.picking_parser = subparsers.add_parser(
-            prog=f'{PROG} {PICKING}',
-            name=PICKING,
-            description=f'{DESCRIPTION} - {PICKING} mode',
+        self.variant_picking_parser = subparsers.add_parser(
+            prog=f'{PROG} {VARIANT_PICKING}',
+            name=VARIANT_PICKING,
+            description=f'{DESCRIPTION} - {VARIANT_PICKING} mode',
             add_help=False)
 
         self.vcf2csv_parser = subparsers.add_parser(
@@ -263,15 +263,15 @@ class EntryPoint:
             self.root_parser.add_argument(*arg['keys'], **arg['properties'])
 
         self.__add(
-            parser=self.filtering_parser,
-            required_args=MODE_TO_GROUP_TO_ARGS[FILTERING]['Required'],
-            optional_args=MODE_TO_GROUP_TO_ARGS[FILTERING]['Optional']
+            parser=self.variant_filtering_parser,
+            required_args=MODE_TO_GROUP_TO_ARGS[VARIANT_FILTERING]['Required'],
+            optional_args=MODE_TO_GROUP_TO_ARGS[VARIANT_FILTERING]['Optional']
         )
 
         self.__add(
-            parser=self.picking_parser,
-            required_args=MODE_TO_GROUP_TO_ARGS[PICKING]['Required'],
-            optional_args=MODE_TO_GROUP_TO_ARGS[PICKING]['Optional']
+            parser=self.variant_picking_parser,
+            required_args=MODE_TO_GROUP_TO_ARGS[VARIANT_PICKING]['Required'],
+            optional_args=MODE_TO_GROUP_TO_ARGS[VARIANT_PICKING]['Optional']
         )
 
         self.__add(
@@ -300,8 +300,8 @@ class EntryPoint:
         if args.mode is None:
             self.root_parser.print_help()
 
-        elif args.mode == FILTERING:
-            print(f'Start running variant {FILTERING} {__VERSION__}\n', flush=True)
+        elif args.mode == VARIANT_FILTERING:
+            print(f'Start running omic {VARIANT_FILTERING} {__VERSION__}\n', flush=True)
             filtering(
                 input_vcf=args.input_vcf,
                 output_vcf=args.output_vcf,
@@ -309,8 +309,8 @@ class EntryPoint:
                 variant_removal_flags=args.variant_removal_flags,
                 workdir=args.workdir)
 
-        elif args.mode == PICKING:
-            print(f'Start running variant {PICKING} {__VERSION__}\n', flush=True)
+        elif args.mode == VARIANT_PICKING:
+            print(f'Start running omic {VARIANT_PICKING} {__VERSION__}\n', flush=True)
             picking(
                 ref_fa=args.ref_fa,
                 output_vcf=args.output_vcf,
@@ -326,7 +326,7 @@ class EntryPoint:
                 workdir=args.workdir)
 
         elif args.mode == VCF2CSV:
-            print(f'Start running variant {VCF2CSV} {__VERSION__}\n', flush=True)
+            print(f'Start running omic {VCF2CSV} {__VERSION__}\n', flush=True)
             vcf2csv(
                 input_vcf=args.input_vcf,
                 output_csv=args.output_csv,

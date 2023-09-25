@@ -1,25 +1,26 @@
-## CLI tools for variant calling pipeline
+## OMIC CLI tools
 
 ```commandline
-git clone https://github.com/linyc74/variant.git
+git clone https://github.com/linyc74/omic.git
+git clone https://github.com/linyc74/omic.git
 
-python variant [COMMAND] [ARGS]
+python omic [COMMAND] [ARGS]
 ```
 
 Help messages:
 
 ```commandline
-python variant filtering -h
-python variant picking -h
-python variant vcf2csv -h
+python omic variant-filtering -h
+python omic variant-picking -h
+python omic vcf2csv -h
 ```
 
 ### Variant Filtering
 
-The `filtering` mode flags variants and then remove variants based on flags:
+The `variant-filering` command flags variants and then remove variants based on flags:
 
 ```commandline
-python variant filtering \
+python omic variant-filtering \
     --input-vcf input.vcf \
     --output-vcf output.vcf \
     --variant-flagging-criteria "LOW_DP: DP<20, HIGH_MQ: MQ>=30" \
@@ -28,10 +29,10 @@ python variant filtering \
 
 ### Variant Picking
 
-The `picking` mode picks variants from multiple vcfs:
+The `variant-picking` command picks variants from multiple vcfs:
 
 ```commandline
-python variant picking \
+python omic variant-picking \
     --ref-fa hg38.fa \     
     --mutect2 mutect2.vcf \
     --muse muse.vcf \      
@@ -41,7 +42,7 @@ python variant picking \
     --min-indel-callers 1
 ```
 
-Available caller intputs for the `picking` mode include:
+Available caller intputs for `variant-picking` include:
 - `--mutect2`
 - `--haplotype-caller`
 - `--muse`
@@ -52,10 +53,10 @@ Available caller intputs for the `picking` mode include:
 
 ### VCF to CSV
 
-The `vcf2csv` mode parses VCF file into CSV format:
+The `vcf2csv` command parses VCF file into CSV format:
 
 ```commandline
-python variant vcf2csv \
+python omic vcf2csv \
     --input-vcf input.vcf \
     --output-csv output.csv
 ```
