@@ -3,7 +3,7 @@ from typing import List, Dict
 from src import variant_filtering, variant_picking, vcf2csv
 
 
-__VERSION__ = '1.0.0'
+__VERSION__ = '1.1.0-beta'
 
 
 PROG = 'python variant'
@@ -83,6 +83,13 @@ MODE_TO_GROUP_TO_ARGS = {
                             'required': False,
                             'default': 'None',
                             'help': 'comma-separated flags for variant removal, e.g. "panel_of_normals,map_qual" (default: %(default)s)',
+                        }
+                    },
+                    {
+                        'keys': ['--only-pass'],
+                        'properties': {
+                            'action': 'store_true',
+                            'help': 'only keep the variants with PASS in FILTER column',
                         }
                     },
                     WORKDIR_ARG,
@@ -307,6 +314,7 @@ class EntryPoint:
                 output_vcf=args.output_vcf,
                 variant_flagging_criteria=args.variant_flagging_criteria,
                 variant_removal_flags=args.variant_removal_flags,
+                only_pass=args.only_pass,
                 workdir=args.workdir)
 
         elif args.mode == VARIANT_PICKING:

@@ -12,6 +12,7 @@ def variant_filtering(
         output_vcf: str,
         variant_flagging_criteria: str,
         variant_removal_flags: str,
+        only_pass: bool,
         workdir: str):
 
     makedirs(workdir, exist_ok=True)
@@ -27,7 +28,8 @@ def variant_filtering(
         input_vcf=input_vcf,
         output_vcf=output_vcf,
         variant_flagging_criteria=variant_flagging_criteria,
-        variant_removal_flags=variant_removal_flags)
+        variant_removal_flags=variant_removal_flags,
+        only_pass=only_pass)
 
 
 class VariantFiltering(Processor):
@@ -36,6 +38,7 @@ class VariantFiltering(Processor):
     output_vcf: str
     variant_flagging_criteria: str
     variant_removal_flags: List[str]
+    only_pass: bool
 
     vcf: str
 
@@ -44,12 +47,14 @@ class VariantFiltering(Processor):
             input_vcf: str,
             output_vcf: str,
             variant_flagging_criteria: str,
-            variant_removal_flags: str):
+            variant_removal_flags: str,
+            only_pass: bool):
 
         self.input_vcf = input_vcf
         self.output_vcf = output_vcf
         self.variant_flagging_criteria = variant_flagging_criteria
         self.variant_removal_flags = [] if variant_removal_flags.lower() == 'none' else variant_removal_flags.split(',')
+        self.only_pass = only_pass
 
         self.vcf = self.input_vcf
         self.flag_variants()
@@ -64,7 +69,8 @@ class VariantFiltering(Processor):
     def remove_variants(self):
         self.vcf = RemoveVariants(self.settings).main(
             vcf=self.vcf,
-            flags=self.variant_removal_flags)
+            flags=self.variant_removal_flags,
+            only_pass=self.only_pass)
 
 
 def variant_picking(
