@@ -20,6 +20,7 @@ class TestCLI(unittest.TestCase):
 --output-vcf {self.output} \\
 --variant-flagging-criteria "LOW_DP: DP<20, HIGH_MQ: MQ>=30" \\
 --variant-removal-flags panel_of_normal,LOW_DP \\
+--only-pass \\
 --workdir {self.workdir}'''
         subprocess.check_call(cmd, shell=True)
 

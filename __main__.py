@@ -85,6 +85,13 @@ MODE_TO_GROUP_TO_ARGS = {
                             'help': 'comma-separated flags for variant removal, e.g. "panel_of_normals,map_qual" (default: %(default)s)',
                         }
                     },
+                    {
+                        'keys': ['--only-pass'],
+                        'properties': {
+                            'action': 'store_true',
+                            'help': 'only keep the variants with PASS in FILTER column',
+                        }
+                    },
                     WORKDIR_ARG,
                     HELP_ARG,
                     VERSION_ARG,
@@ -307,6 +314,7 @@ class EntryPoint:
                 output_vcf=args.output_vcf,
                 variant_flagging_criteria=args.variant_flagging_criteria,
                 variant_removal_flags=args.variant_removal_flags,
+                only_pass=args.only_pass,
                 workdir=args.workdir)
 
         elif args.mode == VARIANT_PICKING:
