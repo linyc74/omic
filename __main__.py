@@ -3,7 +3,7 @@ from typing import List, Dict
 from src import variant_filtering, variant_picking, vcf2csv
 
 
-__VERSION__ = '1.1.0-beta'
+__VERSION__ = '1.1.0'
 
 
 PROG = 'python variant'
