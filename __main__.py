@@ -1,18 +1,19 @@
 import argparse
 from typing import List, Dict
-from src import variant_filtering, variant_picking, vcf2csv
+from src import variant_filtering, variant_picking, vcf2csv, remove_umi
 
 
-__VERSION__ = '1.1.0'
+__VERSION__ = '1.2.0-beta'
 
 
-PROG = 'python variant'
+PROG = 'python omic'
 DESCRIPTION = f'CLI tools for variant calling pipeline (version {__VERSION__}) by Yu-Cheng Lin (ylin@nycu.edu.tw)'
 
 
 VARIANT_FILTERING = 'variant-filtering'
 VARIANT_PICKING = 'variant-picking'
 VCF2CSV = 'vcf2csv'
+REMOVE_UMI = 'remove-umi'
 
 
 INPUT_VCF_ARG = {
@@ -219,6 +220,66 @@ MODE_TO_GROUP_TO_ARGS = {
                     HELP_ARG,
                     VERSION_ARG,
                 ],
+        },
+    REMOVE_UMI:
+        {
+            'Required':
+                [
+                    {
+                        'keys': ['-1', '--input-fq1'],
+                        'properties': {
+                            'type': str,
+                            'required': True,
+                            'help': 'path to the input read 1 fastq(.gz) file',
+                        }
+                    },
+                    {
+                        'keys': ['-2', '--input-fq2'],
+                        'properties': {
+                            'type': str,
+                            'required': True,
+                            'help': 'path to the input read 2 fastq(.gz) file',
+                        }
+                    },
+                    {
+                        'keys': ['-3', '--output-fq1'],
+                        'properties': {
+                            'type': str,
+                            'required': True,
+                            'help': 'path to the output read 1 fastq(.gz) file',
+                        }
+                    },
+                    {
+                        'keys': ['-4', '--output-fq2'],
+                        'properties': {
+                            'type': str,
+                            'required': True,
+                            'help': 'path to the output read 2 fastq(.gz) file',
+                        }
+                    },
+                ],
+            'Optional':
+                [
+                    {
+                        'keys': ['-l', '--umi-length'],
+                        'properties': {
+                            'type': int,
+                            'required': False,
+                            'default': 0,
+                            'help': 'UMI length (bp) to be removed (default: %(default)s)',
+                        }
+                    },
+                    {
+                        'keys': ['-z', '--gzip'],
+                        'properties': {
+                            'action': 'store_true',
+                            'help': 'gzip the output fastq files',
+                        }
+                    },
+                    WORKDIR_ARG,
+                    HELP_ARG,
+                    VERSION_ARG,
+                ],
         }
 }
 
@@ -229,6 +290,7 @@ class EntryPoint:
     variant_filtering_parser: argparse.ArgumentParser
     variant_picking_parser: argparse.ArgumentParser
     vcf2csv_parser: argparse.ArgumentParser
+    remove_umi_parser: argparse.ArgumentParser
 
     def main(self):
         self.set_parsers()
@@ -265,6 +327,12 @@ class EntryPoint:
             description=f'{DESCRIPTION} - {VCF2CSV} mode',
             add_help=False)
 
+        self.remove_umi_parser = subparsers.add_parser(
+            prog=f'{PROG} {REMOVE_UMI}',
+            name=REMOVE_UMI,
+            description=f'{DESCRIPTION} - {REMOVE_UMI} mode',
+            add_help=False)
+
     def add_arguments(self):
         for arg in [HELP_ARG, VERSION_ARG]:
             self.root_parser.add_argument(*arg['keys'], **arg['properties'])
@@ -285,6 +353,12 @@ class EntryPoint:
             parser=self.vcf2csv_parser,
             required_args=MODE_TO_GROUP_TO_ARGS[VCF2CSV]['Required'],
             optional_args=MODE_TO_GROUP_TO_ARGS[VCF2CSV]['Optional']
+        )
+
+        self.__add(
+            parser=self.remove_umi_parser,
+            required_args=MODE_TO_GROUP_TO_ARGS[REMOVE_UMI]['Required'],
+            optional_args=MODE_TO_GROUP_TO_ARGS[REMOVE_UMI]['Optional']
         )
 
     def __add(
@@ -338,6 +412,17 @@ class EntryPoint:
             vcf2csv(
                 input_vcf=args.input_vcf,
                 output_csv=args.output_csv,
+                workdir=args.workdir)
+
+        elif args.mode == REMOVE_UMI:
+            print(f'Start running omic {REMOVE_UMI} {__VERSION__}\n', flush=True)
+            remove_umi(
+                input_fq1=args.input_fq1,
+                input_fq2=args.input_fq2,
+                output_fq1=args.output_fq1,
+                output_fq2=args.output_fq2,
+                umi_length=args.umi_length,
+                gzip=args.gzip,
                 workdir=args.workdir)
 
 

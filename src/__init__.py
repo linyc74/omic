@@ -3,6 +3,7 @@ from os.path import basename, join
 from typing import List, Optional
 from .parse_vcf import ParseVcf
 from .template import Settings, Processor
+from .remove_umi import RemoveUmiAndAdapter
 from .variant_picking import VariantPicking
 from .variant_filtering import FlagVariants, RemoveVariants
 
@@ -221,3 +222,51 @@ class Vcf2Csv(Processor):
 
         csv = join(self.workdir, basename(self.input_vcf)[:-len('.vcf')] + '.csv')
         self.call(f'mv {csv} {self.output_csv}')
+
+
+def remove_umi(
+        input_fq1: str,
+        input_fq2: str,
+        output_fq1: str,
+        output_fq2: str,
+        umi_length: int,
+        gzip: bool,
+        workdir: str):
+
+    makedirs(workdir, exist_ok=True)
+
+    settings = Settings(
+        workdir=workdir,
+        outdir='.',
+        threads=1,
+        debug=False,
+        mock=False)
+
+    RemoveUmi(settings).main(
+        input_fq1=input_fq1,
+        input_fq2=input_fq2,
+        output_fq1=output_fq1,
+        output_fq2=output_fq2,
+        umi_length=umi_length,
+        gzip=gzip)
+
+
+class RemoveUmi(Processor):
+
+    def main(
+            self,
+            input_fq1: str,
+            input_fq2: str,
+            output_fq1: str,
+            output_fq2: str,
+            umi_length: int,
+            gzip: bool):
+
+        fq1, fq2 = RemoveUmiAndAdapter(self.settings).main(
+            fq1=input_fq1,
+            fq2=input_fq2,
+            umi_length=umi_length,
+            gz=gzip)
+
+        self.call(f'mv {fq1} {output_fq1}')
+        self.call(f'mv {fq2} {output_fq2}')
