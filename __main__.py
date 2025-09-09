@@ -3,7 +3,7 @@ from typing import List, Dict
 from src import variant_filtering, variant_picking, vcf2csv, remove_umi
 
 
-__VERSION__ = '1.2.0'
+__VERSION__ = '1.2.1-beta'
 
 
 PROG = 'python omic'
